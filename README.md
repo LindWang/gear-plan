@@ -1,77 +1,106 @@
-# Hiking Gear Weight Planner
+# Gear Planner
 
-A web application for planning and analyzing hiking gear weight distribution. Built with SvelteKit and TypeScript, this tool helps hikers optimize their pack weight by tracking gear items and visualizing weight distribution across categories.
+Modern web app for planning and analyzing hiking gear with weight tracking and organization. Built with SvelteKit, TypeScript, and Neon PostgreSQL.
 
 ## Features
 
-- **Easy Gear Entry** - Add hiking items with name, category, and weight in grams
-- **Automatic Calculations** - Real-time total weight calculation with smart formatting (g/kg)
-- **Category Analysis** - Visual breakdown of weight distribution by gear category
-- **Responsive Design** - Works on desktop, tablet, and mobile devices
-- **Modern UI** - Clean design with smooth animations and interactions
-- **Real-time Updates** - Instant recalculation as you add or remove items
+- Multiple gear lists for different trips
+- Add items with name, category, weight, and description
+- Real-time weight totals and statistics
+- Category breakdown and analytics
+- Toast notifications and confirmation dialogs
+- Responsive, accessible design
+- Neon PostgreSQL cloud database
 
 ## Gear Categories
 
-The planner organizes gear into 5 logical categories:
+Five main categories:
 
-- **Clothing & Protection** - Base layers, rain gear, insulation, gloves, hats
-- **Hydration & Essentials** - Water, filters, first aid, navigation, tools
-- **Shelter** - Tent, tarp, footprint, stakes
-- **Sleep System** - Sleeping bag, pad, pillow
-- **Pack System** - Backpack, stuff sacks, compression sacks
+- Clothing & Protection
+- Hydration & Essentials
+- Shelter
+- Sleep System
+- Pack System
 
 ## Quick Start
 
-### Prerequisites
+**Prerequisites:** Node.js 18+, npm/pnpm/yarn, Neon PostgreSQL account
 
-- Node.js 18+
-- npm, pnpm, or yarn
-
-### Installation
+**Install:**
 
 ```bash
 git clone https://github.com/PeterZhouDev/gear-plan.git
 cd gear-plan
 npm install
+```
+
+**Environment:**
+
+1. Create Neon PostgreSQL account
+2. Copy `.env.example` to `.env.local`
+3. Add your Neon database URL to `.env.local`
+
+**Database:**
+Run schema from `neon-schema.sql` in Neon SQL Editor
+
+**Start Development:**
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Visit [http://localhost:5173](http://localhost:5173)
 
 ## Usage
 
-**Adding Items:** Enter item name, select category, input weight in grams, then click "Add Item" or press Enter.
+- Create gear lists for different trips
+- Add, edit, and delete gear items
+- View weight summary and gear statistics
+- Responsive UI with feedback and confirmation dialogs
 
-**Analysis:** View total weight and category breakdown with percentage distribution and progress bars.
+## Architecture
 
-**Management:** Remove items with the × button. All calculations update automatically.
+Feature-Sliced Design (FSD):
+
+src/
+
+- app/: stores, styles
+- entities/: gear, gear-list
+- pages/: main-page
+- routes/: SvelteKit routing
+- shared/: api, lib, ui
+- widgets/: gear-form, gear-list, gear-stats, weight-summary
 
 ## Development
 
-### Tech Stack
+**Tech Stack:**
 
-- [SvelteKit](https://kit.svelte.dev/) - Full-stack web framework
-- [Svelte 5](https://svelte.dev/) - Component framework with runes syntax
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Vite](https://vitejs.dev/) - Build tool and dev server
+- SvelteKit
+- Svelte 5
+- TypeScript
+- Neon PostgreSQL
+- Vite
 
-### Scripts
+**Scripts:**
 
 ```bash
-npm run dev      # Development server
+npm run dev      # Start dev server
 npm run build    # Production build
 npm run preview  # Preview build
-npm run check    # Type checking
+npm run check    # Type check
 ```
 
 ## Contributing
 
-1. Fork the repository
+1. Fork the repo
 2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+3. Follow FSD architecture
+4. Use TypeScript
+5. Test on multiple devices
+6. Submit a pull request
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE)
+
+---
