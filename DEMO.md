@@ -7,6 +7,10 @@
 2026-09-18:同一个 build 曾同时部署到 Pages 和 Workers,后按决定删掉 Worker,
 只保留 Pages(Workers 部署方式见文末,需要时可随时恢复)。
 
+**项目名注意**:该项目在 dashboard 里已从 `gear-plan-demo` 改名为 `gearplan`,
+但 pages.dev 子域仍沿用 `gear-plan-demo.pages.dev` 没变 —— 网址照旧,
+**部署命令必须用新项目名 `gearplan`**,写旧名会报项目不存在。
+
 ## 与原版的差别
 
 原版是 SvelteKit + 直连 Neon Postgres(浏览器端用 `PUBLIC_NEON_DATABASE_URL` 跑 SQL)。
@@ -55,8 +59,8 @@ npm run preview    # 预览构建产物
 set -a; . /tmp/cfenv.sh; set +a   # 或自行 export 两个变量
 
 # Pages(项目已存在时只需 deploy 那行)
-wrangler pages project create gear-plan-demo --production-branch main
-wrangler pages deploy build --project-name gear-plan-demo --branch main --commit-dirty=true
+wrangler pages project create gearplan --production-branch main
+wrangler pages deploy build --project-name gearplan --branch main --commit-dirty=true
 
 # 可选:Workers 版(当前未部署,Worker 已于 2026-09-18 删除)
 # 注意:_redirects 是给 Pages 用的,Workers 会判定它无限循环,必须剔除
