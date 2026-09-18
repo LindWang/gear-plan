@@ -1,5 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
-import { NeonGearListService } from '@/entities/gear-list/api.js';
+import { GearListService } from '@/entities/gear-list/api.js';
 import { GearItemService } from '@/entities/gear/api.js';
 import { createAsyncStore, createApiResponseHandler } from '@/shared/lib/store-patterns.js';
 import { calculateTotalWeight, calculateCategoryStats } from '@/shared/lib/utils.js';
@@ -19,7 +19,7 @@ import type {
 } from '@/shared/types';
 
 // Create service instances
-const gearListService = new NeonGearListService();
+const gearListService = new GearListService();
 const gearItemService = new GearItemService();
 
 // Simple user store - using hardcoded user for now since auth was causing timeouts
@@ -107,9 +107,12 @@ let isLoadingGearLists = false;
 let hasLoadedGearLists = false;
 
 // Gear list management
-async function loadUserGearLists() {
-  // Prevent multiple simultaneous calls or repeated loads
-  if (isLoadingGearLists || hasLoadedGearLists) return;
+async function loadUserGearLists(force = false) {
+  // Skip concurrent calls, and skip repeated loads unless a mutation
+  // invalidated the cache via `force`. Without that escape hatch the guard
+  // swallows the post-mutation refresh, so a newly created / renamed /
+  // deleted list only appears after a full page reload.
+  if (isLoadingGearLists || (hasLoadedGearLists && !force)) return;
   isLoadingGearLists = true;
   isLoading.set(true);
   try {
@@ -149,7 +152,7 @@ async function createGearList(name: string, description?: string, tripType: 'day
     };
     const response = await gearListService.createList(listData);
     if (response.success && response.data) {
-      await loadUserGearLists();
+      await loadUserGearLists(true);
       return response;
     } else {
       dataError.set(response.error || 'Failed to create gear list');
@@ -190,7 +193,7 @@ async function updateGearList(listId: string, updates: Partial<GearList>) {
     const response = await gearListService.updateList(listId, updates);
     if (response.success && response.data) {
       currentGearList.set(response.data);
-      await loadUserGearLists(); // Refresh the lists
+      await loadUserGearLists(true); // Refresh the lists
     } else {
       dataError.set(response.error || 'Failed to update gear list');
     }
@@ -208,7 +211,7 @@ async function deleteGearList(listId: string) {
   try {
     const response = await gearListService.deleteList(listId);
     if (response.success) {
-      await loadUserGearLists(); // Refresh the lists
+      await loadUserGearLists(true); // Refresh the lists
       currentGearList.set(null);
       currentGearItems.set([]);
     } else {

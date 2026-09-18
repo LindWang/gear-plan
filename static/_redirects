@@ -1,0 +1,2 @@
+# Single-page app fallback for Cloudflare Pages (Workers Static Assets reads it too).
+/*    /index.html   200

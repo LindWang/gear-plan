@@ -1,50 +1,30 @@
-import { sql, handleNeonError } from '@/shared/api/neon-client.js';
 import { BaseApiService } from '@/shared/api/base-service.js';
+import * as db from '@/shared/api/demo-db.js';
 import type { GearList, GearListInsert, ApiResponse } from '../gear/types.js';
 
 /**
- * Neon-based Gear List Service
- * Simple, reliable alternative to Supabase
+ * Gear list service for the demo build.
+ *
+ * Same public surface as the upstream Neon-backed service, but backed by
+ * browser-local data (`@/shared/api/demo-db.js`) — no server, no database.
  */
-export class NeonGearListService extends BaseApiService {
+export class GearListService extends BaseApiService {
   constructor() {
-    super({ serviceName: 'NeonGearListService' });
+    super({ serviceName: 'GearListService' });
   }
 
   /**
    * Get all gear lists for a user
    */
   async getUserLists(userId: string): Promise<ApiResponse<GearList[]>> {
-    return this.executeOperation(
-      'getUserLists',
-      userId,
-      async () => {
-        const result = await sql`
-          SELECT * FROM gear_lists 
-          WHERE user_id = ${userId}
-          ORDER BY updated_at DESC
-        `;
-        return result as GearList[];
-      }
-    );
+    return this.executeOperation('getUserLists', userId, async () => db.getUserLists(userId));
   }
 
   /**
    * Create a new gear list
    */
   async createList(list: GearListInsert): Promise<ApiResponse<GearList>> {
-    return this.executeSingleItemOperation(
-      'createList',
-      list,
-      async () => {
-        const result = await sql`
-          INSERT INTO gear_lists (user_id, name, description, trip_type)
-          VALUES (${list.user_id}, ${list.name}, ${list.description || null}, ${list.trip_type || 'day_hike'})
-          RETURNING *
-        `;
-        return result as GearList[];
-      }
-    );
+    return this.executeSingleItemOperation('createList', list, async () => db.createList(list));
   }
 
   /**
@@ -54,13 +34,7 @@ export class NeonGearListService extends BaseApiService {
     return this.executeSingleItemOperation(
       'getListById',
       listId,
-      async () => {
-        const result = await sql`
-          SELECT * FROM gear_lists 
-          WHERE id = ${listId}
-        `;
-        return result as GearList[];
-      },
+      async () => db.getListById(listId),
       'Gear list not found'
     );
   }
@@ -72,36 +46,15 @@ export class NeonGearListService extends BaseApiService {
     return this.executeSingleItemOperation(
       'updateList',
       { listId, updates },
-      async () => {
-        const result = await sql`
-          UPDATE gear_lists 
-          SET 
-            name = COALESCE(${updates.name}, name),
-            description = COALESCE(${updates.description}, description),
-            trip_type = COALESCE(${updates.trip_type}, trip_type),
-            updated_at = NOW()
-          WHERE id = ${listId}
-          RETURNING *
-        `;
-        return result as GearList[];
-      },
+      async () => db.updateList(listId, updates),
       'Gear list not found'
     );
   }
 
   /**
-   * Delete a gear list
+   * Delete a gear list (its items go with it)
    */
   async deleteList(listId: string): Promise<ApiResponse<boolean>> {
-    return this.executeBooleanOperation(
-      'deleteList',
-      listId,
-      async () => {
-        return await sql`
-          DELETE FROM gear_lists 
-          WHERE id = ${listId}
-        `;
-      }
-    );
+    return this.executeBooleanOperation('deleteList', listId, async () => db.deleteList(listId));
   }
 }
