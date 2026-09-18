@@ -1,9 +1,11 @@
 # Gear Planner — 演示版 (Cloudflare)
 
-浏览器本地存储版,无后端、无数据库,静态部署到 Cloudflare **Pages** 与 **Workers**。
+浏览器本地存储版,无后端、无数据库,静态部署到 Cloudflare Pages。
 
-- Pages:  https://gear-plan-demo.pages.dev
-- Workers: https://gear-plan-demo.gogowa.workers.dev
+- Pages:  https://gear-plan-demo.pages.dev   ← 唯一线上入口
+
+2026-09-18:同一个 build 曾同时部署到 Pages 和 Workers,后按决定删掉 Worker,
+只保留 Pages(Workers 部署方式见文末,需要时可随时恢复)。
 
 ## 与原版的差别
 
@@ -56,8 +58,8 @@ set -a; . /tmp/cfenv.sh; set +a   # 或自行 export 两个变量
 wrangler pages project create gear-plan-demo --production-branch main
 wrangler pages deploy build --project-name gear-plan-demo --branch main --commit-dirty=true
 
-# Workers(静态资源)
-# 注意:_redirects 交给 Pages 用,Workers 会判定它无限循环,所以要剔除
+# 可选:Workers 版(当前未部署,Worker 已于 2026-09-18 删除)
+# 注意:_redirects 是给 Pages 用的,Workers 会判定它无限循环,必须剔除
 rm -rf /tmp/gear-plan-workers-assets && cp -r build /tmp/gear-plan-workers-assets && rm -f /tmp/gear-plan-workers-assets/_redirects
 wrangler deploy --assets /tmp/gear-plan-workers-assets
 ```
